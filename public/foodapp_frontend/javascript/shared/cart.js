@@ -1,18 +1,4 @@
-let userId = 1;
-
 // This file contains all the functions related to cart
-
-let getCartDetails = new Promise((resolve, reject) => {
-  $.ajax({
-    url: `http://localhost:1337/carts?users_permissions_user=${userId}`,
-    type: "GET",
-    success: (result) => resolve(result),
-    error: (error) => {
-      console.error(error)
-      reject("Sorry coudn't fetch items, please try again.")
-    }
-  })
-});
 
 //SUB
 let createCartItem = (productId, quantity, price) => {
@@ -29,6 +15,25 @@ let createCartItem = (productId, quantity, price) => {
       error: (error) => {
         console.error(error)
         reject("Sorry coudn't fetch items, please try again.")
+      }
+    })
+  });
+}
+
+//SUB
+let updateCartItem = (cartItemId, quantity, price) => {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: `http://localhost:1337/cart-items/${cartItemId}`,
+      type: "PUT",
+      data: {
+        "quantity": +quantity,
+        "price": +quantity * +price
+      },
+      success: (result) => resolve(result),
+      error: (error) => {
+        console.error(error)
+        reject("Sorry coudn't update quantity, please try again.")
       }
     })
   });
@@ -66,7 +71,7 @@ let updateCart = (cartDetails) => {
 }
 
 //MAIN
-let addItemToCart = (productId, quantity, price) => {
+let addItemToCart = (productId, quantity, price, displayCategory) => {
   createCartItem(productId, quantity, price)
     .then(cartItemDetails => {
       getCartDetails
@@ -74,24 +79,76 @@ let addItemToCart = (productId, quantity, price) => {
           if (!cartDetails[0]) throw new Error("addItemToCart: There is no cart details found")
           if (!cartDetails[0].cart_items) throw new Error("addItemToCart: There is no cart items found")
           cartDetails[0].cart_items.push(cartItemDetails);
-          updateCart(cartDetails[0]).then(result => console.log("addItemToCart: Success"))
+          updateCart(cartDetails[0]).then(result => {
+            removeItemsFromDisplay();
+            switch (displayCategory) {
+              case "allItems":
+                displayAllProducts();
+                break;
+              case "quickBites":
+                displayQuickBites();
+                break;
+              case "coldDrinks":
+                displayColdDrinks();
+                break;
+              case "hotDrinks":
+                displayHotDrinks();
+                break;
+              default:
+                throw new Error("There is an error in refetch function")
+            }
+          })
         })
         .catch(error => console.error(`addItemToCart: ${error}`))
     })
 }
 
 //MAIN
-let removeFromCart = (productId) => {
-  console.log(productId)
+let removeFromCart = (productId, displayCategory) => {
   getCartDetails
     .then(cartDetails => {
       if (!cartDetails[0]) throw new Error("removeFromCart: There is no cart details found")
       if (!cartDetails[0].cart_items) throw new Error("removeFromCart: There is no cart items found")
-      let cartItem = cartDetails[0].cart_items.find(item => item.product === productId)
+      let cartItem = cartDetails[0].cart_items.find(item => {
+        if (item.product.id) return item.product.id === productId
+        return item.product === productId
+      })
       if (!cartItem) throw new Error("removeFromCart: This item is not there in the cart!!")
       if (!cartItem) throw new Error("removeFromCart: There is an error in the cart item details")
-      deleteCartItem(cartItem.id)
-      .then(result => console.log("removeFromCart: Success"))
+      cartDetails[0].cart_items = cartDetails[0].cart_items.filter(item => {
+        if (item.product.id) return item.product.id !== productId
+        return item.product !== productId
+      })
+      updateCart(cartDetails[0]).then(cartUpdate => {
+        deleteCartItem(cartItem.id).then(cartItemDelete => {
+          removeItemsFromDisplay();
+          switch (displayCategory) {
+            case "allItems":
+              displayAllProducts();
+              break;
+            case "quickBites":
+              displayQuickBites();
+              break;
+            case "coldDrinks":
+              displayColdDrinks();
+              break;
+            case "hotDrinks":
+              displayHotDrinks();
+              break;
+            case "cart":
+              displayCart();
+              break;
+            default:
+              throw new Error("There is an error in refetch function")
+          }
+        })
+      })
     })
     .catch(error => console.error(`removeFromCart: ${error}`))
+}
+
+//MAIN
+let updateCartItemQuantity = (cartItemId, quantity, price) => {
+  updateCartItem(cartItemId, quantity, price)
+  .then(updateResult => updateResult)
 }
