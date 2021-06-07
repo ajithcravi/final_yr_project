@@ -74,7 +74,7 @@ let updateCart = (cartDetails) => {
 let addItemToCart = (productId, quantity, price, displayCategory) => {
   createCartItem(productId, quantity, price)
     .then(cartItemDetails => {
-      getCartDetails
+      getCartDetails()
         .then(cartDetails => {
           if (!cartDetails[0]) throw new Error("addItemToCart: There is no cart details found")
           if (!cartDetails[0].cart_items) throw new Error("addItemToCart: There is no cart items found")
@@ -105,7 +105,7 @@ let addItemToCart = (productId, quantity, price, displayCategory) => {
 
 //MAIN
 let removeFromCart = (productId, displayCategory) => {
-  getCartDetails
+  getCartDetails()
     .then(cartDetails => {
       if (!cartDetails[0]) throw new Error("removeFromCart: There is no cart details found")
       if (!cartDetails[0].cart_items) throw new Error("removeFromCart: There is no cart items found")
@@ -146,6 +146,7 @@ let removeFromCart = (productId, displayCategory) => {
     })
     .catch(error => console.error(`removeFromCart: ${error}`))
 }
+
 
 //MAIN
 let updateCartItemQuantity = (cartItemId, quantity, price) => {

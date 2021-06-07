@@ -1,15 +1,35 @@
-let userId = 1;
-let getCartDetails = new Promise((resolve, reject) => {
-  $.ajax({
-    url: `http://localhost:1337/carts?users_permissions_user=${userId}`,
-    type: "GET",
-    success: (result) => resolve(result),
-    error: (error) => {
-      console.error(error)
-      reject("Sorry coudn't fetch items, please try again.")
-    }
-  })
-});
+let createCart = () => {
+  return new Promise((resolve, reject) => {
+    let userId = JSON.parse(window.sessionStorage.getItem("userId"));
+    $.ajax({
+      url: `http://localhost:1337/carts`,
+      type: "POST",
+      data: {
+        "users_permissions_user": userId
+      },
+      success: (result) => resolve(result),
+      error: (error) => {
+        console.error(error)
+        reject("Sorry coudn't fetch items, please try again.")
+      }
+    })
+  });
+}
+
+let getCartDetails = () => {
+  return new Promise((resolve, reject) => {
+    let userId = JSON.parse(window.sessionStorage.getItem("userId"));
+    $.ajax({
+      url: `http://localhost:1337/carts?users_permissions_user=${userId}`,
+      type: "GET",
+      success: (result) => resolve(result),
+      error: (error) => {
+        console.error(error)
+        reject("Sorry coudn't fetch cart details, please try again.")
+      }
+    })
+  });
+}
 
 let getProductDetails = (params) => {
   return new Promise((resolve, reject) => {
@@ -30,7 +50,7 @@ let updateTotal = () => {
   let subTotals = document.getElementsByClassName('subTotal');
   let total = 0;
   Object.values(subTotals).forEach(subTotal => total += +subTotal.innerHTML);
-  let totalTable = document.getElementById('total-table');totalTable.innerHTML = `
+  let totalTable = document.getElementById('total-table'); totalTable.innerHTML = `
   <tr>
     <td>Total</td>
     <td>QAR ${total}</td>
@@ -39,7 +59,7 @@ let updateTotal = () => {
 }
 
 let displayItems = (allItems, displayCategory) => {
-  getCartDetails.then(cartDetails => {
+  getCartDetails().then(cartDetails => {
     if (!cartDetails[0]) throw new Error("addItemToCart: There is no cart details found")
     if (!cartDetails[0].cart_items) throw new Error("addItemToCart: There is no cart items found")
     let cartItemsArray = cartDetails[0].cart_items.map(item => {
@@ -179,7 +199,7 @@ let displayHotDrinks = () => {
 }
 
 let displayCart = () => {
-  getCartDetails.then(cart => {
+  getCartDetails().then(cart => {
     let productTOCartItemMap = {};
     let productTOQuantityMap = {};
     let cartItemProductIds = cart[0].cart_items.map(item => {
