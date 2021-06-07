@@ -41,15 +41,24 @@ let createOrder = (orderItems) => {
 }
 
 let placeOrder = () => {
-  getCartDetails().then(cartDetails => {
-    if (!cartDetails[0]) throw new Error("placeOrder: There is no cart details found")
-    if (!cartDetails[0].cart_items) throw new Error("placeOrder: There is no cart items found")
-    let orderItems = cartDetails[0].cart_items.map(item => {
-      if (item.product.id) return createOrderItem(item.product.id, item.quantity, item.price).then(result => { return ({id: result.id}) })
-      return createOrderItem(item.product, item.quantity, item.price).then(result => { return ({id: result.id}) })
-    });
-    Promise.all(orderItems).then(orderItemsArray => createOrder(orderItemsArray).then(order => {
-      console.log(order);
-    }));
-  })
+  if(confirm("Are you sure want to proceed?")) {
+    getCartDetails().then(cartDetails => {
+      if (!cartDetails[0]) throw new Error("placeOrder: There is no cart details found")
+      if (!cartDetails[0].cart_items) throw new Error("placeOrder: There is no cart items found")
+      let orderItems = cartDetails[0].cart_items.map(item => {
+        if (item.product.id) return createOrderItem(item.product.id, item.quantity, item.price).then(result => {
+          deleteCartItem(item.id);
+          return ({ id: result.id })
+        })
+        return createOrderItem(item.product, item.quantity, item.price).then(result => {
+          deleteCartItem(item.id);
+          return ({ id: result.id })
+        })
+      });
+      Promise.all(orderItems).then(orderItemsArray => createOrder(orderItemsArray).then(order => {
+        alert("Order placed");
+        window.location.href = 'http://localhost:3000/home'
+      }));
+    })
+  }
 }
