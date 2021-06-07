@@ -18,10 +18,13 @@ let loginOrRegister = () => {
           window.sessionStorage.setItem("userId", result.user.id);
           getCartDetails().then(cartDetails => {
             if (!cartDetails[0]) createCart();
+            toogleLoginButtons();
+            notifyUser("Signed in successfully")
           })
         },
         error: (error) => {
           console.error(error)
+          notifyUser("Sign in/Registration failed")
           reject("Login/Registration failed")
         }
       })
@@ -32,8 +35,20 @@ let loginOrRegister = () => {
 let signOut = () => {
   setCookie('jwt', '');
   sessionStorage.clear();
-  console.log('Successfully signed out')
-  window.location.href ='http://localhost:3000/home';
+  notifyUser('Successfully signed out')
+  window.location.href = 'http://localhost:3000/home';
+}
+
+let toogleLoginButtons = () => {
+  if (loginCheck()) {
+    let signInButton = document.getElementById("signInButton")
+    let signOutButton = document.getElementById("signOutButton")
+    let cartButton = document.getElementById("cartButton")
+    if (signInButton) signInButton.style.display = 'none';
+    if (signOutButton) signOutButton.style.display = 'inline';
+    if (cartButton) cartButton.style.display = 'inline';
+  }
 }
 
 loginOrRegister();
+toogleLoginButtons();

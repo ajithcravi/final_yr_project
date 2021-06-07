@@ -5,7 +5,8 @@ getAllProducts = new Promise((resolve,reject) => {
     success: (result) => resolve(result),
     error: (error) => {
       console.error(error)
-      reject ("Sorry coudn't fetch all products, please try again.")
+      notifyUser ("Sorry coudn't fetch all products.\nPlease try again.")
+      reject ("Sorry coudn't fetch all products.\nPlease try again.")
     }
   })
 })
@@ -17,7 +18,8 @@ getQuickBites = new Promise((resolve,reject) => {
     success: (result) => resolve(result),
     error: (error) => {
       console.error(error)
-      reject ("Sorry coudn't fetch quick bites, please try again.")
+      notifyUser ("Sorry coudn't fetch quick bites.\nPlease try again.")
+      reject ("Sorry coudn't fetch quick bites.\nPlease try again.")
     }
   })
 })
@@ -29,7 +31,8 @@ getColdDrinks = new Promise((resolve,reject) => {
       success: (result) => resolve(result),
       error: (error) => {
           console.error(error)
-          reject ("Sorry coudn't cold drinks, please try again.")
+          notifyUser ("Sorry coudn't fetch cold drinks.\nPlease try again.")
+          reject ("Sorry coudn't fetch cold drinks.\nPlease try again.")
       }
   })
 })
@@ -42,7 +45,8 @@ let getHotDrinks = new Promise((resolve,reject) => {
       success: (result) => resolve(result),
       error: (error) => {
           console.error(error)
-          reject ("Sorry coudn't fetch items, please try again.")
+          notifyUser ("Sorry coudn't fetch hot drinks.\nPlease try again.")
+          reject ("Sorry coudn't fetch hot drinks.\nPlease try again.")
       }
   })
 })

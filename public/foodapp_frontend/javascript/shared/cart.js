@@ -14,7 +14,8 @@ let createCartItem = (productId, quantity, price) => {
       success: (result) => resolve(result),
       error: (error) => {
         console.error(error)
-        reject("Sorry coudn't fetch items, please try again.")
+        notifyUser("Sorry! couldn't add product to cart.\nPlease try again.")
+        reject("Sorry! couldn't add product to cart.\nPlease try again.")
       }
     })
   });
@@ -32,7 +33,8 @@ let updateCartItem = (cartItemId, quantity, price) => {
       },
       success: (result) => resolve(result),
       error: (error) => {
-        console.error(error)
+        console.error(error);
+        notifyUser("Sorry coudn't update quantity, please try again.");
         reject("Sorry coudn't update quantity, please try again.")
       }
     })
@@ -47,7 +49,8 @@ let deleteCartItem = (cartItemId) => {
       type: "DELETE",
       success: (result) => resolve(result),
       error: (error) => {
-        console.error(error)
+        console.error(error);
+        notifyUser("Sorry coudn't remove product from cart.\nPlease try again.")
         reject("Sorry coudn't delete cart-items, please try again.")
       }
     })
@@ -63,8 +66,9 @@ let updateCart = (cartDetails) => {
       data: cartDetails,
       success: (result) => resolve(result),
       error: (error) => {
-        console.error(error)
-        reject("Sorry coudn't fetch items, please try again.")
+        console.error(error);
+        notifyUser("Sorry coudn't update cart.\nPlease try again.");
+        reject("Sorry coudn't update cart.\nPlease try again.")
       }
     })
   });
@@ -80,6 +84,7 @@ let addItemToCart = (productId, quantity, price, displayCategory) => {
           if (!cartDetails[0].cart_items) throw new Error("addItemToCart: There is no cart items found")
           cartDetails[0].cart_items.push(cartItemDetails);
           updateCart(cartDetails[0]).then(result => {
+            notifyUser("Product added to cart successfully");
             removeItemsFromDisplay();
             switch (displayCategory) {
               case "allItems":
@@ -99,7 +104,10 @@ let addItemToCart = (productId, quantity, price, displayCategory) => {
             }
           })
         })
-        .catch(error => console.error(`addItemToCart: ${error}`))
+        .catch(error => {
+          notifyUser("Couldn't add item to cart.\nPlease try again.");
+          console.error(`addItemToCart: ${error}`)
+        })
     })
 }
 
@@ -121,6 +129,7 @@ let removeFromCart = (productId, displayCategory) => {
       })
       updateCart(cartDetails[0]).then(cartUpdate => {
         deleteCartItem(cartItem.id).then(cartItemDelete => {
+          notifyUser("Product removed from cart successfully");
           removeItemsFromDisplay();
           switch (displayCategory) {
             case "allItems":

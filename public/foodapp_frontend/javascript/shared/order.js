@@ -14,7 +14,8 @@ let createOrderItem = (productId, quantity, price) => {
       success: (result) => resolve(result),
       error: (error) => {
         console.error(error)
-        reject("Sorry coudn't create order items, please try again.")
+        notifyUser("Sorry coudn't add product to order.\nPlease try again.")
+        reject("Sorry coudn't add product to order.\nPlease try again.")
       }
     })
   });
@@ -34,7 +35,8 @@ let createOrder = (orderItems) => {
       success: (result) => resolve(result),
       error: (error) => {
         console.error(error)
-        reject("Sorry coudn't fetch items, please try again.")
+        notifyUser("Sorry coudn't create order.\nPlease try again.")
+        reject("Sorry coudn't create order.\nPlease try again.")
       }
     })
   });

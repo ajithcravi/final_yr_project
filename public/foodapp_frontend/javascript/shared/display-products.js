@@ -10,7 +10,8 @@ let createCart = () => {
       success: (result) => resolve(result),
       error: (error) => {
         console.error(error)
-        reject("Sorry coudn't fetch items, please try again.")
+        notifyUser("Sorry coudn't create cart for you.\nPlease try again.");
+        reject("Sorry coudn't create cart for you.\nPlease try again.");
       }
     })
   });
@@ -25,7 +26,8 @@ let getCartDetails = () => {
       success: (result) => resolve(result),
       error: (error) => {
         console.error(error)
-        reject("Sorry coudn't fetch cart details, please try again.")
+        notifyUser("Sorry coudn't fetch cart details.\nPlease try again.")
+        reject("Sorry coudn't fetch cart details.\nPlease try again.")
       }
     })
   });
@@ -40,7 +42,8 @@ let getProductDetails = (params) => {
       success: (result) => resolve(result),
       error: (error) => {
         console.error(error)
-        reject("Sorry coudn't fetch product details, please try again.")
+        notifyUser("Sorry coudn't fetch product details.\nPlease try again.")
+        reject("Sorry coudn't fetch product details.\nPlease try again.")
       }
     })
   });
@@ -70,11 +73,14 @@ let displayItems = (allItems, displayCategory) => {
     if (allItems.length > 0) {
       allItems.forEach(item => {
         let allTable = document.getElementById('all-table')
-        let allItem = document.createElement('tr')
+        let allItem = document.createElement('tr');
+        allItem.setAttribute("id", item.product_id);
+        allItem.setAttribute("class", "products");
+        document.getElementById('productDataList').innerHTML += `<option value="${item.product_id}">${item.product_name}</option>`;
         if (cartItemsArray.includes(item.id)) {
           allItem.innerHTML =
             `
-          <td id = "${item.product_id}">
+          <td>
               <div class="cart-info">
                   <img src="${item.product_image.url}">
                       <div>
@@ -151,10 +157,7 @@ let displayCartItems = (cartItems, productToCartMap, quantityMap) => {
     let cartPage = document.getElementById('cart-page')
     cartPage.innerHTML = `
     <h5>
-      Products are going out of stock!!!
-    </h5>
-    <h5>
-      Grab your's soon
+      Your cart is empty
     </h5>
     `;
   }
@@ -167,7 +170,7 @@ let removeItemsFromDisplay = () => {
     allTable.innerHTML = `
     <tr>
       <th>Product</th>
-      <th>Price</th>
+      <th>Price (QAR)</th>
     </tr>
     `;
   }
@@ -221,4 +224,9 @@ let displayCart = () => {
 let updateValue = (domID, quantity, price) => {
   const element = document.getElementById(domID);
   element.innerHTML = `${quantity * price}`;
+}
+
+let searchProduct = (value) => {
+  $('.products').hide();
+  $(`#${value}`).show();
 }
